@@ -48,6 +48,8 @@ textarea{height:90px;margin:8px 0}
 <input type="file" accept="image/*" id="af" hidden onchange="setAv(this)"><div id="tt"></div><div id="s"></div>
 <script>
 window.onerror=(m,u,l)=>{if(!l)return;const b=document.createElement('div');b.style.cssText='position:fixed;left:8px;right:8px;top:8px;z-index:30;background:#ff5a4d;color:#111;padding:10px;border-radius:8px;font-size:13px';b.textContent='Ошибка: '+m+' (строка '+l+'). Нажми, чтобы закрыть.';b.onclick=()=>b.remove();document.body.appendChild(b)};
+const VER=9;
+(function(){fetch(location.pathname+'?'+Date.now(),{cache:'no-store'}).then(r=>r.text()).then(t=>{const m=t.match(/const VER=(\d+)/);if(m&&+m[1]!==VER){const n=Date.now();let l=0;try{l=+localStorage.getItem('mtr')||0}catch(e){}if(n-l>60000){try{localStorage.setItem('mtr',n)}catch(e){}location.replace(location.pathname+'?u='+n)}}}).catch(()=>{})})();
 const NAMES=['Английский','Литература','География','История','Информатика','Биология','Физра','Алгебра','Химия','Русский','Физика','Труд','Геометрия','ОБЖ'];
 const SEED=[[2,4,2,5],[5,2,3,5,3,3],[5,5,2],[4],[4,5],[5],[5,5],[3,3,3,5,3,3,3],[5,4],[3,2],[3,3],[4,5],[5,4,4],[]];
 const GOAL=4+1/3,END=new Date(2026,9,26),KEY='mt1';
@@ -93,7 +95,7 @@ function grades(){const all=NAMES.flatMap(k=>vals(k)),o=sum(all)/all.length;
 <div class="card"><b>Как меняется итоговый средний</b>${chart()}<div class="sm">Цель ${f2(GOAL)}: треть предметов «5», остальные «4»</div><div class="mu sm">${finAvg()>=GOAL-1e-9?'Цель достигнута':'Осталось +'+f2(GOAL-finAvg())}</div></div>
 <div style="margin-top:12px">${ACT().sort((a,b)=>avg(b)-avg(a)).concat(NAMES.filter(k=>!S.g[k].length)).map(k=>{const em=!S.g[k].length,av=em?0:avg(k),f=em?0:fin(av);return`<div class="card sub t${f}"><div class="row" style="align-items:center"><div><b>${k}</b><div class="mu sm">${em?'оценок пока нет':'средний '+f2(av)}</div></div><div class="fin" style="font-size:38px">${em?'—':f}<small>итог</small></div></div><div class="chips">${S.g[k].map(x=>`<button class="chip c${x.v}" onclick="oG('${k}',${x.i})">${x.v}</button>`).join('')}<button class="chip add" onclick="oN('${k}')" aria-label="Добавить оценку: ${k}">+</button></div></div>`}).join('')}</div>
 
-<h2>Копия данных</h2><div class="mu sm" style="margin-bottom:6px">Версия приложения: 3 окт, v8</div><div class="card sm mu">Раз в неделю нажимай «Сделать копию» и отправляй текст себе в заметки. Если данные пропадут, вставь текст и нажми «Восстановить».<textarea id="bk"></textarea>
+<h2>Копия данных</h2><div class="mu sm" style="margin-bottom:6px">Версия приложения: v${VER}</div><div class="card sm mu">Раз в неделю нажимай «Сделать копию» и отправляй текст себе в заметки. Если данные пропадут, вставь текст и нажми «Восстановить».<textarea id="bk"></textarea>
 <div class="row"><button class="btn g" onclick="exp()">Сделать копию</button><button class="btn g" onclick="imp()">Восстановить</button></div></div>
 `}
 const cnt=(d,i)=>(S.c[d]||{})[i]||0;
