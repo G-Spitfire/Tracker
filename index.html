@@ -38,6 +38,7 @@ h2{font-size:22px;margin:22px 0 8px}
 .ach.got{color:var(--tx)}.ach.got .st,.ach.got b{color:var(--ac)}
 #tt{position:fixed;left:50%;top:12px;transform:translate(-50%,-200px);background:var(--ac);color:#111;font-weight:700;padding:12px 18px;border-radius:10px;z-index:20;max-width:90%;text-align:center;transition:transform .25s;pointer-events:none}#tt.on{transform:translate(-50%,0)}
 @media(prefers-reduced-motion:reduce){#tt{transition:none}}
+.sj{min-height:44px;padding:0 14px;border-radius:22px;border:2px solid var(--ln);background:none;color:var(--tx);font-size:16px;cursor:pointer}.sj.on{background:var(--ac);border-color:var(--ac);color:#111;font-weight:700}
 .ov{position:fixed;inset:0;background:#0008;display:flex;align-items:flex-end;z-index:9}
 .sh{max-height:90%;overflow-y:auto;background:var(--card);width:100%;max-width:560px;margin:0 auto;border-radius:16px 16px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px))}
 .sh .chips .chip{flex:1;height:52px;font-size:22px}
@@ -48,7 +49,7 @@ textarea{height:90px;margin:8px 0}
 <input type="file" accept="image/*" id="af" hidden onchange="setAv(this)"><div id="tt"></div><div id="s"></div>
 <script>
 window.onerror=(m,u,l)=>{if(!l)return;const b=document.createElement('div');b.style.cssText='position:fixed;left:8px;right:8px;top:8px;z-index:30;background:#ff5a4d;color:#111;padding:10px;border-radius:8px;font-size:13px';b.textContent='Ошибка: '+m+' (строка '+l+'). Нажми, чтобы закрыть.';b.onclick=()=>b.remove();document.body.appendChild(b)};
-const VER=9;
+const VER=10;
 (function(){fetch(location.pathname+'?'+Date.now(),{cache:'no-store'}).then(r=>r.text()).then(t=>{const m=t.match(/const VER=(\d+)/);if(m&&+m[1]!==VER){const n=Date.now();let l=0;try{l=+localStorage.getItem('mtr')||0}catch(e){}if(n-l>60000){try{localStorage.setItem('mtr',n)}catch(e){}location.replace(location.pathname+'?u='+n)}}}).catch(()=>{})})();
 const NAMES=['Английский','Литература','География','История','Информатика','Биология','Физра','Алгебра','Химия','Русский','Физика','Труд','Геометрия','ОБЖ'];
 const SEED=[[2,4,2,5],[5,2,3,5,3,3],[5,5,2],[4],[4,5],[5],[5,5],[3,3,3,5,3,3,3],[5,4],[3,2],[3,3],[4,5],[5,4,4],[]];
@@ -56,7 +57,7 @@ const GOAL=4+1/3,END=new Date(2026,9,26),KEY='mt1';
 let S,tab='r';
 const TASKS=()=>[{i:'hw',t:'Сделать уроки'},{i:'rd',t:'Прочитать главы',u:'глав'},{i:'pu',t:'Отжался',u:'раз'},{i:'pw',t:'Подтянулся',u:'раз'},{i:'ho',t:'Помощь по дому'}];
 function def(){let n=0;return{g:Object.fromEntries(NAMES.map((k,i)=>[k,SEED[i].map(v=>({i:++n,v}))])),t:TASKS(),d:{},c:{},h:{},p:{dn:[]},v:4,n}}
-function mig(o){if(!(o.v>=4)){o.t=TASKS();o.c=o.c||{};o.h=o.h||{};o.p=o.p||{dn:[]}}if(!o.g['ОБЖ'])o.g['ОБЖ']=[];o.v=4;return o}
+function mig(o){if(!(o.v>=4)){o.t=TASKS();o.c=o.c||{};o.h=o.h||{};o.p=o.p||{dn:[]}}if(!o.g['ОБЖ'])o.g['ОБЖ']=[];if(!o.x)o.x={};o.v=4;return o}
 try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
 if(!S||!S.g)S=def();S=mig(S);
 const ACT=()=>NAMES.filter(k=>S.g[k].length);
@@ -112,20 +113,20 @@ function oP(){const n=S.p.dn.length;sheet(`<h2 style="margin-top:0">Шаг ${n+1
 function sP(){const n=S.p.dn.length,t=document.getElementById('pn').value.trim();S.p.dn.push({n,d:iso(new Date()),t});save();cs();render();toast('★ Шаг по профессии сделан')}
 function ach(d){const dn=S.d[d]||[],c=S.c[d]||{};return{all:S.t.every(t=>t.u?(c[t.i]||0)>0:dn.includes(t.i)),ex:(c.pu||0)+(c.pw||0)>=TH.pu,rd:(c.rd||0)>=TH.rd}}
 function today(){const d=iso(new Date()),dn=S.d[d]||[],c=streak(),W=wk(),ds=W.map(iso),fm=x=>String(x.getDate()).padStart(2,'0')+'.'+String(x.getMonth()+1).padStart(2,'0');
- const A=ach(d),q=cnt(d,'pu')+cnt(d,'pw'),done=S.t.filter(t=>t.u?cnt(d,t.i)>0:dn.includes(t.i)).length;
+ const hx=((S.x[d]||{}).hw||{s:[]}).s,A=ach(d),q=cnt(d,'pu')+cnt(d,'pw'),done=S.t.filter(t=>t.u?cnt(d,t.i)>0:dn.includes(t.i)).length;
  const list=S.t.map(t=>{if(t.u){const n=cnt(d,t.i),st=n&&((t.i=='rd'&&A.rd)||(t.i!='rd'&&A.ex));return`<div class="chk ${n?'dn':''}" onclick="oC('${t.i}')"><span class="box">${n?'✓':''}</span><span style="flex:1">${t.t}</span><span class="${st?'warn':'mu'} sm">сегодня: ${n}${st?' ★':''}</span></div>`}
-  return`<div class="chk ${dn.includes(t.i)?'dn':''}" onclick="tg('${t.i}')"><span class="box">${dn.includes(t.i)?'✓':''}</span><span style="flex:1">${t.t}</span></div>`}).join('');
+  return`<div class="chk ${dn.includes(t.i)?'dn':''}" onclick="tg('${t.i}')"><span class="box">${dn.includes(t.i)?'✓':''}</span><span style="flex:1">${t.t}${t.i=='hw'?`<div class="mu sm">${dn.includes('hw')&&hx.length?hx.join(', '):'выбери предметы'}</div>`:''}</span></div>`}).join('');
  const ad=[['all','Все дела закрыты',`${done} из ${S.t.length}`],['ex','Сверхрезультат: 50+ раз',`${q} из ${TH.pu}`],['rd','Читаю: 3+ главы',`${cnt(d,'rd')} из ${TH.rd}`]].map(a=>`<div class="ach ${A[a[0]]?'got':''}"><span class="st">★</span><span>${a[1]}</span><b>${a[2]}</b></div>`).join('');
  const pd=W.map(x=>{const y=new Date(x);y.setDate(y.getDate()-7);return iso(y)});
  const dl=(n,p)=>{if(!p)return n?'<span class="ok">новое</span>':'';const x=Math.round((n-p)/p*100);return`<span class="${x>0?'ok':x<0?'bad':''}">${x>0?'+':''}${x}%</span>`};
  const wkr=S.t.map(t=>{let n,p,u;if(t.u){n=sum(ds.map(x=>cnt(x,t.i)));p=sum(pd.map(x=>cnt(x,t.i)));u=t.u}else{n=ds.filter(x=>(S.d[x]||[]).includes(t.i)).length;p=pd.filter(x=>(S.d[x]||[]).includes(t.i)).length;u='дн.'}
   const g=dl(n,p);return`<div style="padding:7px 0"><div class="row"><span>${t.t}</span><b>${n} ${u}</b></div><div class="mu sm">прошлая неделя: ${p} ${u}${g?' · '+g:''}</div></div>`}).join('');
- const sd=k=>ds.filter(x=>ach(x)[k]).length;
+ const sd=k=>ds.filter(x=>ach(x)[k]).length,hs={};ds.forEach(x=>((S.x[x]||{}).hw||{s:[]}).s.forEach(k=>hs[k]=(hs[k]||0)+1));const hl=Object.entries(hs).sort((a,b)=>b[1]-a[1]).map(([k,n])=>k+' '+n).join(' · ');
  return`<div class="hero"><div class="big">${c}</div><div class="mu" style="padding-bottom:6px">${pl(c)} подряд<br>с сделанными уроками</div></div>
 <div class="card" style="padding-top:2px;padding-bottom:2px">${list}</div>
 ${prof(ds)}
 <h2>Отметки дня</h2><div class="card" style="padding-top:4px;padding-bottom:4px">${ad}</div><div class="mu sm">Сверхрезультат считается по отжиманиям и подтягиваниям вместе.</div>
-<h2>За неделю ${fm(W[0])}–${fm(W[6])}</h2><div class="card">${wkr}<div class="row" style="padding:7px 0"><span>Шаг по профессии</span><b class="${S.p.dn.some(x=>x.d>=ds[0]&&x.d<=ds[6])?'ok':'mu'}">${S.p.dn.some(x=>x.d>=ds[0]&&x.d<=ds[6])?'сделан':'ещё нет'}</b></div><div class="mu sm" style="padding-top:8px;border-top:1px solid var(--ln)">Дней со всеми делами: ${sd('all')} · сверхрезультатов: ${sd('ex')} · дней с 3+ главами: ${sd('rd')}</div></div>${new Date().getDay()?'<div class="mu sm">Неделя ещё идёт: к воскресенью цифры вырастут.</div>':''}`}
+<h2>За неделю ${fm(W[0])}–${fm(W[6])}</h2><div class="card">${wkr}${hl?`<div style="padding:7px 0"><div class="mu sm">Уроки по предметам</div><div>${hl}</div></div>`:''}<div class="row" style="padding:7px 0"><span>Шаг по профессии</span><b class="${S.p.dn.some(x=>x.d>=ds[0]&&x.d<=ds[6])?'ok':'mu'}">${S.p.dn.some(x=>x.d>=ds[0]&&x.d<=ds[6])?'сделан':'ещё нет'}</b></div><div class="mu sm" style="padding-top:8px;border-top:1px solid var(--ln)">Дней со всеми делами: ${sd('all')} · сверхрезультатов: ${sd('ex')} · дней с 3+ главами: ${sd('rd')}</div></div>${new Date().getDay()?'<div class="mu sm">Неделя ещё идёт: к воскресенью цифры вырастут.</div>':''}`}
 function oC(i){const t=S.t.find(x=>x.i==i),q=t.u=='раз'?[10,20,30,50]:[1,2,3],d=iso(new Date());
  sheet(`<h2 style="margin-top:0">${esc(t.t)}</h2><div class="mu sm">Сегодня уже: ${cnt(d,i)} ${t.u}. Сколько добавить?</div><div class="chips">${q.map(n=>`<button class="chip" onclick="aC('${i}',${n})">+${n}</button>`).join('')}</div><p><input id="cn" type="number" inputmode="numeric" min="1" placeholder="Своё число"></p><div class="row"><button class="btn" onclick="aC('${i}',+document.getElementById('cn').value)">Добавить</button><button class="btn g" onclick="aC('${i}',0,1)">Обнулить за сегодня</button></div>`)}
 function aC(i,n,z){if(!z&&!(n>0))return;cs();chk(()=>{const d=iso(new Date()),c=S.c[d]||(S.c[d]={});if(z)c[i]=0;else c[i]=(c[i]||0)+Math.round(n)})}
@@ -134,9 +135,15 @@ function render(){document.querySelectorAll('.bar button').forEach(b=>b.classLis
 document.querySelector('.bar').onclick=e=>{const t=e.target.dataset.t;if(t){tab=t;render();scrollTo(0,0)}};
 function sheet(h){document.getElementById('s').innerHTML=h?`<div class="ov" onclick="if(event.target==this)cs()"><div class="sh">${h}</div></div>`:''}
 const cs=()=>sheet('');
+let hc={s:[]};
+function oH(){const e=((S.x[iso(new Date())]||{}).hw||{s:[]});hc={s:e.s.slice()};rH()}
+function rH(){const ok=(S.d[iso(new Date())]||[]).includes('hw');sheet(`<h2 style="margin-top:0">Какие уроки делал?</h2><div class="chips" style="margin-top:0">${NAMES.map((k,j)=>`<button class="sj ${hc.s.includes(k)?'on':''}" onclick="tH(${j})">${k}</button>`).join('')}</div><div class="mu sm" style="margin:10px 0">Можно выбрать несколько.</div><div class="row" style="gap:10px"><button class="btn" onclick="sH()">Готово</button>${ok?'<button class="btn g" onclick="rmH()">Убрать отметку</button>':''}</div>`)}
+function tH(j){const k=NAMES[j],x=hc.s.indexOf(k);x<0?hc.s.push(k):hc.s.splice(x,1);rH()}
+function sH(){const d=iso(new Date());(S.x[d]||(S.x[d]={})).hw={s:hc.s};cs();chk(()=>{const a=S.d[d]||(S.d[d]=[]);if(!a.includes('hw'))a.push('hw')})}
+function rmH(){const d=iso(new Date());cs();chk(()=>{const a=S.d[d]||[],x=a.indexOf('hw');if(x>=0)a.splice(x,1);if(S.x[d])delete S.x[d].hw})}
 function toast(m){const e=document.getElementById('tt');e.textContent=m;e.className='on';clearTimeout(toast.t);toast.t=setTimeout(()=>e.className='',3000)}
 function chk(f){const d=iso(new Date()),b=ach(d);f();const a=ach(d),m=[];if(!b.all&&a.all)m.push('Все дела за день закрыты!');if(!b.ex&&a.ex)m.push('Сверхрезультат: 50+ раз за день!');if(!b.rd&&a.rd)m.push('3+ главы за день!');save();render();if(m.length)toast('★ '+m.join(' '))}
-function tg(i){chk(()=>{const d=iso(new Date()),a=S.d[d]||(S.d[d]=[]),x=a.indexOf(i);x<0?a.push(i):a.splice(x,1)})}
+function tg(i){if(i=='hw')return oH();chk(()=>{const d=iso(new Date()),a=S.d[d]||(S.d[d]=[]),x=a.indexOf(i);x<0?a.push(i):a.splice(x,1)})}
 function oN(k){sheet(`<h2 style="margin-top:0">${k}</h2><div class="mu sm">Новая оценка</div><div class="chips">${[2,3,4,5].map(v=>`<button class="chip c${v}" onclick="aN('${k}',${v})">${v}</button>`).join('')}</div>`)}
 function aN(k,v){S.g[k].push({i:++S.n,v});save();cs();render()}
 function oG(k,i){const x=S.g[k].find(y=>y.i==i);sheet(`<h2 style="margin-top:0">${k}: ${x.v}</h2><div class="mu sm">Пересдал? Выбери новую оценку, старая заменится.</div><div class="chips">${[2,3,4,5].map(v=>`<button class="chip c${v}" onclick="rG('${k}',${i},${v})">${v}</button>`).join('')}</div><p><button class="btn g" onclick="dG('${k}',${i})">Удалить оценку</button></p>`)}
