@@ -34,14 +34,15 @@ main{max-width:520px;margin:0 auto;padding:12px 20px 0}
 </style></head><body><main id="m"></main><div id="tt"></div><div id="s"></div>
 <script>
 window.onerror=(m,u,l)=>{if(!l)return;const b=document.createElement('div');b.style.cssText='position:fixed;left:8px;right:8px;top:8px;z-index:30;background:#f2b05e;color:#1a1305;padding:10px;border-radius:12px;font-size:13px';b.textContent='Ошибка: '+m+' (строка '+l+'). Нажми, чтобы закрыть.';b.onclick=()=>b.remove();document.body.appendChild(b)};
-const VER=5;
+const VER=6;
 (function(){fetch(location.pathname+'?'+Date.now(),{cache:'no-store'}).then(r=>r.text()).then(t=>{const m=t.match(/const VER=(\d+)/);if(m&&+m[1]!==VER){const n=Date.now();let l=0;try{l=+localStorage.getItem('wr')||0}catch(e){}if(n-l>60000){try{localStorage.setItem('wr',n)}catch(e){}location.replace(location.pathname+'?u='+n)}}}).catch(()=>{})})();
 const KEY='wife3',DN=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'],PH=['Отлично!','Так держать','Приятно видеть','Молодец'],PRE=['Проснулась','Пришла с работы','Уложила детей','Почистила зубы','Села в транспорт'];
-const BARS='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 19v-8M12 19V5M18 19v-6"/></svg>',KEB='<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><circle cx="12" cy="5.5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="18.5" r="1.8"/></svg>';
+const USR='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8.5" r="3.5"/><path d="M5 20c.8-3.6 3.6-5.5 7-5.5s6.2 1.9 7 5.5"/></svg>',BARS='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M6 19v-8M12 19V5M18 19v-6"/></svg>',KEB='<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><circle cx="12" cy="5.5" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="12" cy="18.5" r="1.8"/></svg>';
 const D=()=>({a:[{id:1,a:'Проснулась',d:'растяжка 10 минут',t:'09:30',r:0,w:[0,1,2,3,4,5,6]},{id:2,a:'Переоделась',d:'велосипед 20 минут',t:'19:30',r:0,w:[0,2,4]},{id:3,a:'Позавтракали',d:'настолки с детьми',t:'12:00',r:0,w:[5,6]},{id:4,a:'Поужинала',d:'один шаг по своему делу',t:'21:00',r:0,w:[1,3,6]},{id:5,a:'Легла',d:'10 страниц книги',t:'22:30',r:0,w:[0,1,2,3,4,5,6]}],d:{},wn:{},ws:'11:00',we:'19:00',wd:[0,1,2,3,4],n:6,v:4});
 let S,cu={};
 try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){}
 if(!S||!Array.isArray(S.a))S=D();
+if(!S.p)S.p={name:'',h:'',why:'',w:[],e:[]};
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
 const esc=s=>String(s).replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';'),hm=t=>t.replace(/^0/,'');
 const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
@@ -51,7 +52,7 @@ function seg(t,w){if(S.wd.includes(w)){if(t<S.ws)return'До работы';if(t<
 function today(){const t=iso(new Date()),w=dow(t),dn=S.d[t]||[],L=S.a.filter(x=>x.w.includes(w)).sort((p,q)=>p.t<q.t?-1:1),nx=L.find(x=>!dn.includes(x.id)),
  I=L.map(x=>({t:x.t,x})).concat(S.wd.includes(w)?[{t:S.ws,w:1}]:[]).sort((p,q)=>p.t<q.t?-1:p.t>q.t?1:p.w?-1:1);
  let day=new Date().toLocaleDateString('ru-RU',{weekday:'long'});day=day[0].toUpperCase()+day.slice(1);
- return`<div class="hd"><div><div class="tm">${day}</div><h1>Сегодня</h1></div><button class="ib" onclick="oW()" aria-label="Неделя и настройки">${BARS}</button></div>`+
+ return`<div class="hd"><div><div class="tm">${day}${S.p.name?', '+esc(S.p.name):''}</div><h1>Сегодня</h1>${S.p.why?`<div class="tm" style="margin-top:4px;font-style:italic">«${esc(S.p.why)}»</div>`:''}</div><div style="display:flex;gap:8px"><button class="ib" onclick="oPr()" aria-label="Профиль">${USR}</button><button class="ib" onclick="oW()" aria-label="Неделя и настройки">${BARS}</button></div></div>`+
  (I.length?I.map(i=>{if(i.w)return`<div class="it"><i class="nd"></i><div class="cd w"><div class="tm">Работа · ${hm(S.ws)}–${hm(S.we)}</div></div></div>`;
   const x=i.x,ok=dn.includes(x.id),cur=x===nx;
   return`<div class="it"><i class="nd ${ok?'d':cur?'c':''}"></i><div class="cd ${cur?'cur':''}"><button class="mn" onclick="tg(${x.id})"><span class="tm">${seg(x.t,w)} · ${hm(x.t)}</span><b>${esc(x.a)} → ${esc(x.d)}</b>${ok?'<span class="ok">Готово</span>':''}</button><button class="kb" onclick="oA(${x.id})" aria-label="Изменить">${KEB}</button>${cur?`<button class="go" onclick="tg(${x.id})">Сделала</button>`:''}</div></div>`}).join(''):`<div class="it"><i class="nd"></i><div class="cd"><div class="tm">На сегодня привязок нет</div></div></div>`)+
@@ -74,9 +75,25 @@ function sA(){rd();cu.a=cu.a.trim();cu.d=cu.d.trim();if(!cu.a||!cu.d||!cu.w.leng
  if(cu.id){const i=S.a.findIndex(y=>y.id==cu.id);S.a[i]=cu}else{cu.id=S.n++;S.a.push(cu)}save();cs();render()}
 function dA(){S.a=S.a.filter(y=>y.id!=cu.id);save();cs();render()}
 function wd(i){const x=S.wd.indexOf(i);x<0?S.wd.push(i):S.wd.splice(x,1);save();render();oW()}
+const a1=a=>a.length?(a.reduce((x,y)=>x+y,0)/a.length).toFixed(1):'–';
+function ev(){const E=[[],[],[]];S.p.e.forEach(x=>E[x.h<12?0:x.h<17?1:2].push(x.v));return E}
+function enHtml(){const E=ev();if(S.p.e.length<3||E.filter(a=>a.length).length<2)return'';return`<div class="wr"><div class="tm">Энергия по времени суток</div><div>Утро ${a1(E[0])} · День ${a1(E[1])} · Вечер ${a1(E[2])}</div><div class="tm" style="margin-top:4px">Ставь занятия туда, где энергии больше.</div></div>`}
+function spark(a){if(a.length<2)return'';const v=a.map(x=>x.v),mn=Math.min(...v),mx=Math.max(...v),r=mx-mn||1,P=a.map((x,i)=>[8+i*(284/(a.length-1)),52-(x.v-mn)/r*44]);return`<svg viewBox="0 0 300 60" width="100%" role="img" aria-label="Динамика веса"><polyline points="${P.map(q=>q[0].toFixed(1)+','+q[1].toFixed(1)).join(' ')}" fill="none" stroke="var(--ac)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>${P.map(q=>`<circle cx="${q[0].toFixed(1)}" cy="${q[1].toFixed(1)}" r="3.5" fill="var(--ac)"/>`).join('')}</svg>`}
+function oPr(){const p=S.p,w=p.w,last=w[w.length-1],E=ev();
+ const L=w.slice(-5).map(x=>{const k=w.indexOf(x),pv=w[k-1],dl=pv?x.v-pv.v:0;return`<div class="row" style="padding:6px 0"><span class="tm" style="font-size:15px">${x.d.slice(8)}.${x.d.slice(5,7)}</span><span>${x.v} кг${pv?` <span class="tm">${dl>0?'+':''}${dl.toFixed(1)}</span>`:''}</span></div>`}).reverse().join('');
+ sheet(`<h1>Профиль</h1><div class="tm">Имя</div><input class="in" maxlength="20" value="${esc(p.name)}" oninput="S.p.name=this.value.trim();save();render()">
+<div class="tm" style="margin-top:20px">Рост, см</div><input class="in" inputmode="numeric" maxlength="3" value="${esc(p.h)}" oninput="S.p.h=this.value.replace(/\D/g,'');save()">
+<div class="tm" style="margin-top:20px">Зачем мне всё это</div><input class="in" maxlength="120" placeholder="Своими словами" value="${esc(p.why)}" oninput="S.p.why=this.value;save();render()">
+<div class="tm" style="margin-top:26px">Вес, кг</div><div style="display:flex;gap:10px;align-items:center"><input class="in" id="pw" inputmode="decimal" placeholder="${last?last.v:'например 64.5'}"><button class="sv" style="width:auto;margin-top:8px;padding:0 20px" onclick="aW()">Записать</button></div>
+<div class="tm" style="margin-top:6px">Достаточно раз в неделю, в одно и то же время. Это просто цифра, а не оценка.</div>${spark(w.slice(-8))}${L}${w.length?'<button class="ch" style="background:none;border:0;color:var(--mu);padding:8px 0;font-size:14px" onclick="dW()">Удалить последнюю запись</button>':''}
+<div class="tm" style="margin-top:26px">Какая энергия сейчас?</div><div class="ch" style="margin-top:8px">${[1,2,3,4,5].map(v=>`<button onclick="aE(${v})" style="min-width:52px">${v}</button>`).join('')}</div>
+<div class="tm" style="margin-top:8px">1 — совсем нет сил, 5 — полна энергии. Записей: ${p.e.length}. Утро ${a1(E[0])} · День ${a1(E[1])} · Вечер ${a1(E[2])}</div><button class="sv g2" onclick="cs()">Готово</button>`)}
+function aW(){const v=parseFloat(document.getElementById('pw').value.replace(',','.'));if(!(v>=25&&v<=300)){toast('Введи вес числом, например 64.5');return}const d=iso(new Date()),w=S.p.w,i=w.findIndex(x=>x.d==d),e={d,v:Math.round(v*10)/10};i<0?w.push(e):w[i]=e;w.sort((a,b)=>a.d<b.d?-1:1);save();oPr();toast('Записано')}
+function dW(){S.p.w.pop();save();oPr()}
+function aE(v){S.p.e.push({ts:Date.now(),h:new Date().getHours(),v});save();oPr();toast('Записано')}
 function oW(){const W=wk(),P=wk(1),pl=(x,ds)=>ds.filter(d=>x.w.includes(dow(d))),dn=(x,ds)=>pl(x,ds).filter(d=>(S.d[d]||[]).includes(x.id)).length;
  sheet(`<h1>Неделя</h1>${S.a.map(x=>`<div class="wr"><div class="row"><span>${esc(x.a)} → ${esc(x.d)}</span><b>${dn(x,W)} из ${pl(x,W).length}</b></div><div class="dt">${W.map(d=>`<i class="${!x.w.includes(dow(d))?'x':(S.d[d]||[]).includes(x.id)?'d':''}"></i>`).join('')}</div><div class="tm" style="margin-top:6px">прошлая неделя: ${dn(x,P)} из ${pl(x,P).length}</div></div>`).join('')||'<div class="tm">Пока нет привязок</div>'}
-<div class="tm" style="margin-top:24px">Что помогло на этой неделе?</div><input class="in" maxlength="80" placeholder="Например: форма готова с вечера" value="${esc(S.wn[W[0]]||'')}" oninput="S.wn['${W[0]}']=this.value;save()">
+${enHtml()}<div class="tm" style="margin-top:24px">Что помогло на этой неделе?</div><input class="in" maxlength="80" placeholder="Например: форма готова с вечера" value="${esc(S.wn[W[0]]||'')}" oninput="S.wn['${W[0]}']=this.value;save()">
 <div class="tm" style="margin-top:24px">Рабочие часы</div><div class="rw" style="margin-top:8px"><span>С</span><input type="time" class="tp" value="${S.ws}" onchange="S.ws=this.value||S.ws;save();render()"><span>До</span><input type="time" class="tp" value="${S.we}" onchange="S.we=this.value||S.we;save();render()"></div><div class="ch dys" style="margin-top:10px">${DN.map((n,i)=>`<button class="${S.wd.includes(i)?'on':''}" onclick="wd(${i})">${n}</button>`).join('')}</div>
 <button class="sv g2" onclick="ics()">Добавить напоминания в Календарь</button><div class="tm" style="margin-top:6px">Только привязки с включённым напоминанием. Откроется Календарь: «Добавить все». Если не открылось, открой приложение в Safari.</div>
 <div class="tm" style="margin-top:24px">Копия данных</div><textarea class="in" id="bk"></textarea><div class="ch" style="margin-top:10px"><button onclick="exp()">Сделать копию</button><button onclick="imp()">Восстановить</button></div><button class="sv g2" onclick="cs()">Закрыть</button><div class="tm" style="margin-top:18px;text-align:center">Версия v${VER}</div>`)}
@@ -88,6 +105,6 @@ function icsText(){const now=new Date(),st=iso(now).replace(/-/g,''),BY=['MO','T
 function ics(){if(!S.a.some(x=>x.r)){toast('Включи напоминание хотя бы у одной привязки');return}const t=icsText(),f=new File([t],'okna.ics',{type:'text/calendar'});
  if(navigator.canShare&&navigator.canShare({files:[f]}))navigator.share({files:[f]}).catch(()=>{});else location.href=URL.createObjectURL(new Blob([t],{type:'text/calendar'}))}
 function exp(){const e=document.getElementById('bk');e.value=JSON.stringify(S);e.select();try{navigator.clipboard.writeText(e.value)}catch(x){}}
-function imp(){try{const o=JSON.parse(document.getElementById('bk').value);if(!o||!Array.isArray(o.a)||typeof o.d!='object')throw 0;S=o;save();cs();render();alert('Данные восстановлены')}catch(e){alert('Не получилось: вставь в поле текст копии целиком')}}
+function imp(){try{const o=JSON.parse(document.getElementById('bk').value);if(!o||!Array.isArray(o.a)||typeof o.d!='object')throw 0;S=o;if(!S.p)S.p={name:'',h:'',why:'',w:[],e:[]};save();cs();render();alert('Данные восстановлены')}catch(e){alert('Не получилось: вставь в поле текст копии целиком')}}
 save();render();
 </script></body></html>
