@@ -39,7 +39,7 @@ input,textarea{width:100%;font-size:18px;padding:13px 16px;border-radius:18px;bo
 <div id="tt"></div><div id="s"></div>
 <script>
 window.onerror=(m,u,l)=>{if(!l)return;const b=document.createElement('div');b.style.cssText='position:fixed;left:8px;right:8px;top:8px;z-index:30;background:#ff6f91;color:#fff;padding:10px;border-radius:14px;font-size:13px';b.textContent='Ошибка: '+m+' (строка '+l+'). Нажми, чтобы закрыть.';b.onclick=()=>b.remove();document.body.appendChild(b)};
-const VER=2;
+const VER=3;
 (function(){fetch(location.pathname+'?'+Date.now(),{cache:'no-store'}).then(r=>r.text()).then(t=>{const m=t.match(/const VER=(\d+)/);if(m&&+m[1]!==VER){const n=Date.now();let l=0;try{l=+localStorage.getItem('kidr')||0}catch(e){}if(n-l>60000){try{localStorage.setItem('kidr',n)}catch(e){}location.replace(location.pathname+'?u='+n)}}}).catch(()=>{})})();
 const KEY='kid1',DN=['Пн','Вт','Ср','Чт','Пт','Сб','Вс'],GD=[1,2,3,4,5,6,0];
 const LV=[[0,'Звёздочка'],[40,'Умница'],[120,'Мастер дня'],[250,'Чемпион']];
@@ -55,9 +55,11 @@ const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
 const sum=a=>a.reduce((x,y)=>x+y,0),esc=s=>String(s).replace(/[&<>"']/g,c=>'&#'+c.charCodeAt(0)+';');
 const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 const wk=()=>{const d=new Date(),k=(d.getDay()+6)%7;return Array.from({length:7},(_,i)=>{const x=new Date(d);x.setDate(d.getDate()-k+i);return iso(x)})};
+if(!S.ex){S.ex=iso(new Date());save()}
+const EX={i:'ex',e:'🤸',t:'Зарядка',s:'5–10 минут',b:'#ffe9d2',c:'#ff9a3c'};
 const T=[{i:'bg',e:'🎒',t:'Собрать портфель',b:'#ffe3d6',c:'#ff8a65'},{i:'cl',e:'👕',t:'Приготовить вещи на завтра',b:'#dff1ff',c:'#4fb3ff'},{i:'hw',e:'✏️',t:'Сделать уроки',s:'выбери предметы',b:'#fff0c2',c:'#f2b300'},{i:'en',e:'🇬🇧',t:'Английский',s:'10–15 минут',b:'#e6defc',c:'#8e6cf0'},{i:'ho',e:'🧹',t:'Помочь по дому',s:'расскажи, что сделала',b:'#d9f6e8',c:'#2fbf8f'}];
 const RD={i:'rd',e:'📖',t:'Почитать',s:'на выходных',b:'#ffdcec',c:'#ff6fa5'};
-const tasks=d=>{const w=new Date(d+'T00:00:00').getDay();return w==0||w==6?T.concat([RD]):T};
+const tasks=d=>{const w=new Date(d+'T00:00:00').getDay(),b=d>=S.ex?[EX].concat(T):T;return w==0||w==6?b.concat([RD]):b};
 const dn=d=>(S.d[d]||[]).filter(i=>tasks(d).some(t=>t.i==i));
 const st=d=>{const n=dn(d).length;return n+(n&&n==tasks(d).length?2:0)};
 function ring(n,m){const C=251.3;return`<svg width="96" height="96" viewBox="0 0 96 96" style="flex:none"><circle cx="48" cy="48" r="40" fill="none" stroke="#ffffff55" stroke-width="10"/><circle cx="48" cy="48" r="40" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-n/m)}" transform="rotate(-90 48 48)"/><text x="48" y="56" text-anchor="middle" font-size="24" font-weight="800" fill="#fff">${n}/${m}</text></svg>`}
