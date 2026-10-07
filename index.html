@@ -48,7 +48,7 @@ textarea{height:90px;margin:8px 0}
 <input type="file" accept="image/*" id="af" hidden onchange="setAv(this)"><div id="tt"></div><div id="s"></div>
 <script>
 window.onerror=(m,u,l)=>{if(!l)return;const b=document.createElement('div');b.style.cssText='position:fixed;left:8px;right:8px;top:8px;z-index:30;background:#ff5a4d;color:#111;padding:10px;border-radius:8px;font-size:13px';b.textContent='Ошибка: '+m+' (строка '+l+'). Нажми, чтобы закрыть.';b.onclick=()=>b.remove();document.body.appendChild(b)};
-const VER=11;
+const VER=12;
 (function(){fetch(location.pathname+'?'+Date.now(),{cache:'no-store'}).then(r=>r.text()).then(t=>{const m=t.match(/const VER=(\d+)/);if(m&&+m[1]!==VER){const n=Date.now();let l=0;try{l=+localStorage.getItem('mtr')||0}catch(e){}if(n-l>60000){try{localStorage.setItem('mtr',n)}catch(e){}location.replace(location.pathname+'?u='+n)}}}).catch(()=>{})})();
 const NAMES=['Английский','Литература','География','История','Информатика','Биология','Физра','Алгебра','Химия','Русский','Физика','Труд','Геометрия','ОБЖ'];
 const SEED=[[2,4,2,5],[5,2,3,5,3,3],[5,5,2],[4],[4,5],[5],[5,5],[3,3,3,5,3,3,3],[5,4],[3,2],[3,3],[4,5],[5,4,4],[]];
@@ -82,10 +82,12 @@ function chart(){const ks=Object.keys(S.h).sort(),pts=[];let last=S.h[ks[0]];
  const vs=pts.map(p=>p.v).concat(GOAL),lo=Math.floor((Math.min(...vs)-.1)*10)/10,hi=Math.ceil((Math.max(...vs)+.1)*10)/10,W=320,H=130,P=28,n=pts.length;
  const x=i=>n>1?P+i*(W-P-8)/(n-1):W/2,y=v=>H-18-(v-lo)/(hi-lo)*(H-30),lb=p=>p.d.slice(8)+'.'+p.d.slice(5,7);
  return`<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="График итогового среднего"><line x1="${P}" x2="${W-8}" y1="${y(GOAL)}" y2="${y(GOAL)}" stroke="var(--ac)" stroke-dasharray="4 4"/><text x="0" y="${y(GOAL)+4}" font-size="11" fill="var(--ac)">${f2(GOAL)}</text><text x="0" y="${y(lo)+4}" font-size="11" fill="var(--mu)">${lo.toFixed(1)}</text>${n>1?`<path d="${pts.map((p,i)=>(i?'L':'M')+x(i).toFixed(1)+' '+y(p.v).toFixed(1)).join('')}" fill="none" stroke="var(--ok)" stroke-width="3" stroke-linejoin="round"/>`:''}${pts.map((p,i)=>`<circle cx="${x(i)}" cy="${y(p.v)}" r="${i==n-1?5:3}" fill="var(--ok)"/>`).join('')}${n>1?`<text x="${P}" y="${H-2}" font-size="11" fill="var(--mu)">${lb(pts[0])}</text>`:''}<text x="${W-8}" y="${H-2}" font-size="11" text-anchor="end" fill="var(--mu)">${lb(pts[n-1])}</text></svg>`}
-function road(){const{bad,good}=calc(),t0=new Date();t0.setHours(0,0,0,0);const days=Math.max(0,Math.round((END-t0)/864e5)),fa=finAvg();
+function wdays(a){let n=0;for(const d=new Date(a);d<=END;d.setDate(d.getDate()+1)){const g=d.getDay();if(g&&g<6)n++}return n}
+const plw=n=>{const a=n%100,b=n%10;return a>10&&a<15?'учебных дней':b==1?'учебный день':b>1&&b<5?'учебных дня':'учебных дней'};
+function road(){const{bad,good}=calc(),t0=new Date();t0.setHours(0,0,0,0);const days=wdays(t0),fa=finAvg();
  const hint=bad.length?`<b>${bad[0].k}:</b> ${bad[0].p.t}. Бери любую возможность получить оценку.`:'Все предметы на четвёрке и выше. Держи планку.';
  const frag=good.filter(g=>g.x);
- return`<div class="hero"><div class="big">${days}</div><div class="mu" style="padding-bottom:6px">${pl(days)} до конца четверти<br>средний ${f2(fa)}, цель ${f2(GOAL)}</div></div>
+ return`<div class="hero"><div class="big">${days}</div><div class="mu" style="padding-bottom:6px">${plw(days)} до конца четверти (без выходных)<br>средний ${f2(fa)}, цель ${f2(GOAL)}</div></div>
 <div class="card hint"><div class="lb">★ Главное на сегодня</div><div class="tx">${hint}</div></div>
 <div class="row" style="align-items:center"><h2>Подтянуть</h2><span class="mu sm">в норме ${good.length} из ${ACT().length}</span></div>
 ${bad.length?bad.map(b=>`<div class="card sub t${b.f}"><div class="row" style="align-items:center"><div><b>${b.k}</b><div class="mu sm">средний ${f2(b.av)}</div></div><div class="fin">${b.f}<small>итог</small></div></div><div style="margin-top:6px">Нужно: ${b.p.t}, будет ${f2(b.p.x)}</div><div class="sc"><span class="mu">Следующая:</span>${scen(b.k)}</div></div>`).join(''):'<div class="card ok">Подтягивать нечего.</div>'}
